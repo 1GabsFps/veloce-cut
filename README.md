@@ -86,14 +86,24 @@ graph LR
 
 ---
 
-## 🚀 Download & Uso Rápido (Portátil)
+## 🚀 Download & Instalação
 
-O **VELOCE** é distribuído como um pacote **100% Standalone (Self-Contained)** — você **não** precisa instalar o .NET Desktop Runtime nem configurar variáveis de ambiente:
+Escolha a opção ideal para o seu fluxo na aba [**Releases Oficiais**](https://github.com/1GabsFps/veloce-cut/releases/latest):
 
-1. Baixe o arquivo **`VELOCE-v1.0.0-win-x64.zip`** na aba [**Releases**](../../releases/latest).
-2. Extraia a pasta em qualquer lugar do seu PC e execute o **`VELOCE.exe`**.
-3. Arraste um vídeo de gameplay para a janela (ou use *"Abrir com -> VELOCE.exe"* direto pelo Windows Explorer).
-4. Use `[A` e `B]` + `Delete` para cortar as partes indesejadas, escolha o preset na barra lateral esquerda e clique em **`⚡ CORTAR & APLICAR BLUR`**.
+| Arquivo | Tipo | Descrição | Download |
+| :--- | :--- | :--- | :--- |
+| **`Veloce.exe`** | **Standalone Portátil** | Executável único direto. Não requer instalação — basta baixar e rodar. | [⬇️ Baixar .exe](https://github.com/1GabsFps/veloce-cut/releases/download/v1.0.0/Veloce.exe) |
+| **`Veloce-Setup.exe`** | **Instalador Windows** | Cria atalhos no Menu Iniciar e na Área de Trabalho com desinstalador nativo. | [⬇️ Baixar Instalador](https://github.com/1GabsFps/veloce-cut/releases/download/v1.0.0/Veloce-Setup.exe) |
+| **`VELOCE-v1.0.0-win-x64.zip`** | **Arquivo Portátil (.zip)** | Pacote zipado completo contendo todas as dependências descompactadas. | [⬇️ Baixar .zip](https://github.com/1GabsFps/veloce-cut/releases/download/v1.0.0/VELOCE-v1.0.0-win-x64.zip) |
+
+### Como Usar
+1. Baixe o **`Veloce.exe`** direto ou instale via **`Veloce-Setup.exe`**;
+2. Arraste um vídeo de gameplay para a janela (ou use *"Abrir com -> VELOCE"* pelo Windows Explorer);
+3. Use os atalhos `[A` e `B]` para marcar o início e o fim de um trecho e pressione `Delete` para cortar;
+4. Escolha o seu perfil de Motion Blur no painel lateral esquerdo e clique em **`⚡ CORTAR & APLICAR BLUR`**.
+
+> [!NOTE]
+> **Aviso do Windows SmartScreen:** Por ser um software de código aberto recém-lançado e sem certificado comercial pago, o Windows pode exibir uma tela azul de aviso. Basta clicar em **"Mais informações"** e depois em **"Executar assim mesmo"**. O código-fonte é 100% auditável neste repositório.
 
 ---
 
@@ -112,6 +122,16 @@ dotnet test Veloce.sln -c Release
 # 2. Gerar a build final Standalone x64
 dotnet publish src/Veloce.App/Veloce.App.csproj -c Release -r win-x64 --self-contained true -o bin/VELOCE
 ```
+
+---
+
+## 🤝 Créditos & Ecossistema
+
+O VELOCE é construído sobre ferramentas e bibliotecas abertas:
+* [libmpv](https://mpv.io/) — Engine de reprodução e manipulação de vídeo via D3D11.
+* [Tekno Blur (`f0e/blur`)](https://github.com/f0e/blur) — Motor de interpolação e motion blur baseado em VapourSynth.
+* [FFmpeg](https://ffmpeg.org/) — Manipulação, corte frame-accurate e mixagem de streams.
+* [WPF UI](https://github.com/lepoco/wpfui) — Biblioteca Fluent Design para Windows 11.
 
 ---
 

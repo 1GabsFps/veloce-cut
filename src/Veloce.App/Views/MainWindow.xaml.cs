@@ -598,7 +598,12 @@ public partial class MainWindow : Window
             : Array.Empty<string>();
         Array.Sort(vidFiles);
 
-        _viewModel.OnVideoLoaded(@"C:\Videos\Valorant_Highlight_240fps_ShadowPlay.mp4", TimeSpan.FromSeconds(24.5));
+        _viewModel.OnVideoLoaded(@"C:\Videos\Valorant 2026.10.05 - 20.54.44.138.DVR.mp4", TimeSpan.FromSeconds(20.65));
+        if (_viewModel.BlurPresets.Count > 0)
+        {
+            var valPreset = _viewModel.BlurPresets.FirstOrDefault(p => p.Name.Contains("valorant", StringComparison.OrdinalIgnoreCase));
+            if (valPreset != null) _viewModel.SelectedBlurPreset = valPreset;
+        }
         UpdateTimelineVisuals();
 
         int frameCounter = 0;
@@ -615,7 +620,7 @@ public partial class MainWindow : Window
             DemoPreviewImage.Source = bmp;
         }
 
-        async System.Threading.Tasks.Task CaptureUiFrameAsync(PresetEditorWindow? overlayEditor = null)
+        async System.Threading.Tasks.Task CaptureUiFrameAsync()
         {
             UpdateLayout();
             await System.Threading.Tasks.Task.Delay(25);
@@ -636,21 +641,6 @@ public partial class MainWindow : Window
                     var vb = new System.Windows.Media.VisualBrush(rootVisual) { Stretch = System.Windows.Media.Stretch.None };
                     dc.DrawRectangle(vb, null, new Rect(0, 0, w, h));
                 }
-
-                if (overlayEditor != null && overlayEditor.Content is System.Windows.Media.Visual editorVisual)
-                {
-                    overlayEditor.UpdateLayout();
-                    dc.DrawRectangle(new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromArgb(150, 0, 0, 0)), null, new Rect(0, 0, w, h));
-                    double ew = overlayEditor.ActualWidth > 0 ? overlayEditor.ActualWidth : 500;
-                    double eh = overlayEditor.ActualHeight > 0 ? overlayEditor.ActualHeight : 640;
-                    double ex = (w - ew) / 2.0;
-                    double ey = (h - eh) / 2.0;
-                    dc.DrawRectangle(new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(24, 24, 24)),
-                        new System.Windows.Media.Pen(new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(59, 130, 246)), 1.5),
-                        new Rect(ex - 2, ey - 2, ew + 4, eh + 4));
-                    var evb = new System.Windows.Media.VisualBrush(editorVisual) { Stretch = System.Windows.Media.Stretch.Fill };
-                    dc.DrawRectangle(evb, null, new Rect(ex, ey, ew, eh));
-                }
             }
 
             var rtb = new System.Windows.Media.Imaging.RenderTargetBitmap(w, h, 96, 96, System.Windows.Media.PixelFormats.Pbgra32);
@@ -664,79 +654,56 @@ public partial class MainWindow : Window
             encoder.Save(fs);
         }
 
-        // Phase 1: Playing video & scrubbing to start point (14 frames)
+        // Phase 1: Playing video & scrubbing to start point [A] (14 frames: ~1.1s)
         PlayPauseIcon.Symbol = Wpf.Ui.Controls.SymbolRegular.Pause20;
         PlayPauseText.Text = "Pause";
         for (int i = 0; i < 14; i++)
         {
             SetGameplayFrame(i * 2);
-            _viewModel.CurrentTime = TimeSpan.FromSeconds(1.2 + i * 0.25);
+            _viewModel.CurrentTime = TimeSpan.FromSeconds(1.0 + i * 0.25);
             await CaptureUiFrameAsync();
         }
 
-        // Phase 2: Pause & Set Marker [A] at 00:04.700, then advance to 00:12.450 (14 frames)
+        // Phase 2: Pause & Set Marker [A] at 00:04.250 (10 frames: ~0.8s)
         PlayPauseIcon.Symbol = Wpf.Ui.Controls.SymbolRegular.Play20;
         PlayPauseText.Text = "Play";
         _viewModel.SetMarkerA(_viewModel.CurrentTime);
-        for (int i = 0; i < 14; i++)
-        {
-            SetGameplayFrame(28 + i * 2);
-            _viewModel.CurrentTime = TimeSpan.FromSeconds(4.7 + (i + 1) * 0.55);
-            await CaptureUiFrameAsync();
-        }
-
-        // Phase 3: Set Marker [B] at 00:12.400 -> highlights [A - B] selection in electric blue (12 frames)
-        _viewModel.SetMarkerB(_viewModel.CurrentTime);
-        for (int i = 0; i < 12; i++)
-        {
-            await CaptureUiFrameAsync();
-        }
-
-        // Phase 4: Press Recortar (Del) -> virtual timeline cut via EDL! (10 frames)
-        _viewModel.DeleteSelection(out _);
-        _viewModel.RenderStatus = "Trecho removido! Timeline virtual EDL atualizada (Frame-Accurate).";
         for (int i = 0; i < 10; i++)
         {
-            SetGameplayFrame(15 + i);
+            SetGameplayFrame(28);
             await CaptureUiFrameAsync();
         }
 
-        // Phase 5: Open Preset Editor Window overlay to show high-contrast sliders & weighting (16 frames)
-        if (_viewModel.SelectedBlurPreset != null)
+        // Phase 3: Scrub forward to 00:08.500 and Set Marker [B] (12 frames: ~1.0s)
+        for (int i = 0; i < 12; i++)
         {
-            var editor = new PresetEditorWindow(
-                _viewModel.SelectedBlurPreset,
-                _viewModel.GetPresetsFilePath(),
-                canDelete: true,
-                onSave: (_, _) => { })
+            SetGameplayFrame(28 + i * 2);
+            _viewModel.CurrentTime = TimeSpan.FromSeconds(4.25 + (i + 1) * 0.35);
+            if (i == 6)
             {
-                WindowStartupLocation = WindowStartupLocation.Manual,
-                Left = -2000,
-                Top = -2000,
-                ShowActivated = false
-            };
-            editor.Show();
-            editor.UpdateLayout();
-            for (int i = 0; i < 16; i++)
-            {
-                await CaptureUiFrameAsync(editor);
+                _viewModel.SetMarkerB(_viewModel.CurrentTime);
             }
-            editor.Close();
+            await CaptureUiFrameAsync();
         }
 
-        // Phase 6: Switch preset & run Render Progress 0% -> 100% (18 frames)
-        if (_viewModel.BlurPresets.Count >= 5)
+        // Phase 4: Press Recortar (Del) -> virtual timeline cut via EDL! (14 frames: ~1.1s)
+        _viewModel.DeleteSelection(out _);
+        _viewModel.RenderStatus = "Trecho removido! Timeline virtual EDL atualizada (Frame-Accurate).";
+        for (int i = 0; i < 14; i++)
         {
-            _viewModel.SelectedBlurPreset = _viewModel.BlurPresets[4]; // Cinematic Ultra Fluid
+            SetGameplayFrame(56 + i * 2);
+            _viewModel.CurrentTime = TimeSpan.FromSeconds(4.30 + i * 0.20);
+            await CaptureUiFrameAsync();
         }
+
+        // Phase 5: Click CORTAR & APLICAR BLUR -> Render Progress 0% -> 100% (22 frames: ~1.8s)
         var stages = new (double pct, string msg)[]
         {
-            (12, "Cortando segmentos (FFmpeg -ss/-to)..."),
-            (28, "Renderizando Motion Blur (28%) - SVP 2880 FPS..."),
-            (54, "Renderizando Motion Blur (54%) - Ponderação Gaussiana..."),
-            (82, "Renderizando Motion Blur (82%) - NVENC CQ 14..."),
-            (94, "Comprimindo vídeo final (1080p 60 FPS)..."),
-            (100, "Renderização concluída! Salvo em: Valorant_Highlight_240fps_ShadowPlay_blur.mp4")
+            (18, "Cortando segmentos (FFmpeg Fast-Seek -ss/-to)..."),
+            (42, "Renderizando Motion Blur (42%) - SVP 1440 FPS..."),
+            (72, "Renderizando Motion Blur (72%) - Ponderação Gaussiana..."),
+            (88, "Comprimindo vídeo final (NVENC CQ 14)..."),
+            (100, "Renderização concluída! Salvo em: Valorant_Highlight_blur.mp4")
         };
 
         foreach (var st in stages)
@@ -745,9 +712,10 @@ public partial class MainWindow : Window
             _viewModel.RenderStatus = st.msg;
             if (st.pct >= 100)
             {
-                _viewModel.LastRenderedPath = @"C:\Videos\Valorant_Highlight_240fps_ShadowPlay_blur.mp4";
+                _viewModel.LastRenderedPath = @"C:\Videos\Valorant_Highlight_blur.mp4";
             }
-            for (int f = 0; f < 3; f++)
+            int reps = st.pct >= 100 ? 6 : 4;
+            for (int f = 0; f < reps; f++)
             {
                 await CaptureUiFrameAsync();
             }
