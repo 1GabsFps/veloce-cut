@@ -1,0 +1,27 @@
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio / .NET
+.vs/
+*.user
+*.userosscache
+*.suo
+*.pdb
+*.cache
+*.nupkg
+
+# Native binaries & release archives (distributed via GitHub Releases)
+*.dll
+*.exe
+*.zip
+*.mp4
+*.mkv
+*.avi
+*.mov
