@@ -2,6 +2,8 @@ Unicode true
 SetCompressor /SOLID lzma
 
 Name "VELOCE"
+Icon "..\src\Veloce.App\Assets\app.ico"
+UninstallIcon "..\src\Veloce.App\Assets\app.ico"
 OutFile "C:\Users\gbr\.gemini\antigravity\scratch\veloce\bin\Veloce-Setup.exe"
 InstallDir "$LOCALAPPDATA\Programs\Veloce"
 RequestExecutionLevel user

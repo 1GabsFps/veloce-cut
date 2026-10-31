@@ -9,7 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="mpv-2.dll" CopyToOutputDirectory="PreserveNewest" Condition="Exists('mpv-2.dll')" />
+    <Content Include="mpv-2.dll" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="Always" Condition="Exists('mpv-2.dll')" />
     <Resource Include="Assets\icon.png" />
   </ItemGroup>
 
@@ -24,6 +24,7 @@
     <Product>VELOCE</Product>
     <AssemblyTitle>VELOCE</AssemblyTitle>
     <ApplicationIcon>Assets\app.ico</ApplicationIcon>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
   </PropertyGroup>
 
 </Project>

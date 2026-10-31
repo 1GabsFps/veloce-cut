@@ -165,8 +165,7 @@ public class MainViewModel : INotifyPropertyChanged
     {
         get
         {
-            var diff = _timelineManager.MarkerB - _timelineManager.MarkerA;
-            if (diff < TimeSpan.Zero) diff = TimeSpan.Zero;
+            var diff = (_timelineManager.MarkerB - _timelineManager.MarkerA).Duration();
             return $"Seleção: {diff.TotalSeconds:F2}s";
         }
     }

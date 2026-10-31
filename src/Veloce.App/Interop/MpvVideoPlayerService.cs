@@ -26,7 +26,7 @@ public interface IVideoPlayerService : IDisposable
     void StepKeyframe(int delta);
     void SeekRelative(double seconds);
     TimeSpan QueryExactPosition();
-    void ApplyEdl(string edlUri);
+    void ApplyEdl(string edlUri, TimeSpan startPosition = default);
 }
 
 public class MpvVideoPlayerService : IVideoPlayerService
@@ -35,6 +35,7 @@ public class MpvVideoPlayerService : IVideoPlayerService
     private IntPtr _mpvHandle = IntPtr.Zero;
     private DispatcherTimer? _pollTimer;
     private bool _isMpvActive = false;
+    private TimeSpan? _pendingSeekAfterLoad;
 
     public event Action<TimeSpan>? PositionChanged;
     public event Action<TimeSpan>? MediaOpened;
@@ -299,18 +300,20 @@ public class MpvVideoPlayerService : IVideoPlayerService
         }
     }
 
-    public void ApplyEdl(string edlUri)
+    public void ApplyEdl(string edlUri, TimeSpan startPosition = default)
     {
         Duration = TimeSpan.Zero;
-        CurrentPosition = TimeSpan.Zero;
+        CurrentPosition = startPosition;
 
         if (_isMpvActive && _mpvHandle != IntPtr.Zero)
         {
             try
             {
-                LibMpvInterop.MpvCommand(_mpvHandle, "loadfile", edlUri);
+                var startSec = startPosition.TotalSeconds.ToString("F6", CultureInfo.InvariantCulture);
+                LibMpvInterop.MpvCommand(_mpvHandle, "loadfile", edlUri, "replace", "0", $"start={startSec}");
                 LibMpvInterop.mpv_set_property_string(_mpvHandle, "pause", "yes");
                 IsPlaying = false;
+                _pendingSeekAfterLoad = startPosition;
             }
             catch
             {
@@ -319,7 +322,7 @@ public class MpvVideoPlayerService : IVideoPlayerService
         }
         else if (_mediaElement != null)
         {
-            Seek(TimeSpan.Zero);
+            Seek(startPosition);
         }
     }
 
@@ -336,7 +339,19 @@ public class MpvVideoPlayerService : IVideoPlayerService
                     LibMpvInterop.mpv_free(posPtr);
                     if (double.TryParse(str, NumberStyles.Float, CultureInfo.InvariantCulture, out var sec))
                     {
-                        CurrentPosition = TimeSpan.FromSeconds(sec);
+                        var parsed = TimeSpan.FromSeconds(sec);
+                        if (_pendingSeekAfterLoad.HasValue)
+                        {
+                            if (parsed < TimeSpan.FromSeconds(0.05) && _pendingSeekAfterLoad.Value > TimeSpan.FromSeconds(0.1))
+                            {
+                                Seek(_pendingSeekAfterLoad.Value, exact: true);
+                                _pendingSeekAfterLoad = null;
+                                return;
+                            }
+                            _pendingSeekAfterLoad = null;
+                        }
+
+                        CurrentPosition = parsed;
                         PositionChanged?.Invoke(CurrentPosition);
                     }
                 }

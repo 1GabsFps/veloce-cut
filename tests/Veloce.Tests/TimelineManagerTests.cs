@@ -56,6 +56,29 @@ public class TimelineManagerTests
     }
 
     [Fact]
+    public void SetMarkers_InReverseOrder_PreservesBothMarkersAndDeletesBetweenThem()
+    {
+        var tm = new TimelineManager();
+        tm.LoadVideo(TimeSpan.FromSeconds(60));
+
+        // Set A at 40s first, then B at 20s (B before A)
+        tm.SetMarkerA(TimeSpan.FromSeconds(40));
+        tm.SetMarkerB(TimeSpan.FromSeconds(20));
+
+        Assert.Equal(TimeSpan.FromSeconds(40), tm.MarkerA);
+        Assert.Equal(TimeSpan.FromSeconds(20), tm.MarkerB);
+
+        bool deleted = tm.DeleteSelection();
+        Assert.True(deleted);
+
+        // Remainder should be [0s, 20s] and [40s, 60s] -> Total 40s
+        Assert.Equal(TimeSpan.FromSeconds(40), tm.RemainingDuration);
+        Assert.Equal(2, tm.Segments.Count);
+        Assert.Equal(new TimeRange(TimeSpan.Zero, TimeSpan.FromSeconds(20)), tm.Segments[0]);
+        Assert.Equal(new TimeRange(TimeSpan.FromSeconds(40), TimeSpan.FromSeconds(60)), tm.Segments[1]);
+    }
+
+    [Fact]
     public void DeleteAcrossExistingSplice_TrimsBothNeighborSegments_AndUndoRestores()
     {
         var tm = new TimelineManager();

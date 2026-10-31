@@ -22,6 +22,45 @@ public static class LibMpvInterop
 
                     var p2 = Path.Combine(baseDir, "libmpv-2.dll");
                     if (File.Exists(p2) && NativeLibrary.TryLoad(p2, out var h2)) return h2;
+
+                    var appCtxDir = AppContext.BaseDirectory;
+                    if (!string.IsNullOrEmpty(appCtxDir) && !appCtxDir.Equals(baseDir, StringComparison.OrdinalIgnoreCase))
+                    {
+                        var p3 = Path.Combine(appCtxDir, "mpv-2.dll");
+                        if (File.Exists(p3) && NativeLibrary.TryLoad(p3, out var h3)) return h3;
+                    }
+
+                    try
+                    {
+                        var procPath = Environment.ProcessPath;
+                        if (!string.IsNullOrEmpty(procPath))
+                        {
+                            var procDir = Path.GetDirectoryName(procPath);
+                            if (!string.IsNullOrEmpty(procDir))
+                            {
+                                var p4 = Path.Combine(procDir, "mpv-2.dll");
+                                if (File.Exists(p4) && NativeLibrary.TryLoad(p4, out var h4)) return h4;
+                            }
+                        }
+                    }
+                    catch { }
+
+                    try
+                    {
+                        var tempNet = Path.Combine(Path.GetTempPath(), ".net", "VELOCE");
+                        if (Directory.Exists(tempNet))
+                        {
+                            var mpvFiles = Directory.GetFiles(tempNet, "mpv-2.dll", SearchOption.AllDirectories);
+                            if (mpvFiles.Length > 0 && File.Exists(mpvFiles[0]) && NativeLibrary.TryLoad(mpvFiles[0], out var hExt))
+                            {
+                                return hExt;
+                            }
+                        }
+                    }
+                    catch { }
+
+                    if (NativeLibrary.TryLoad(DllName, out var h5)) return h5;
+                    if (NativeLibrary.TryLoad("libmpv-2.dll", out var h6)) return h6;
                 }
                 return IntPtr.Zero;
             });
@@ -96,6 +135,42 @@ public static class LibMpvInterop
 
             if (File.Exists(p1) && NativeLibrary.TryLoad(p1, out var h1)) return true;
             if (File.Exists(p2) && NativeLibrary.TryLoad(p2, out var h2)) return true;
+
+            var appCtxDir = AppContext.BaseDirectory;
+            if (!string.IsNullOrEmpty(appCtxDir) && !appCtxDir.Equals(baseDir, StringComparison.OrdinalIgnoreCase))
+            {
+                var p3 = Path.Combine(appCtxDir, "mpv-2.dll");
+                if (File.Exists(p3) && NativeLibrary.TryLoad(p3, out var h3)) return true;
+            }
+
+            try
+            {
+                var procPath = Environment.ProcessPath;
+                if (!string.IsNullOrEmpty(procPath))
+                {
+                    var procDir = Path.GetDirectoryName(procPath);
+                    if (!string.IsNullOrEmpty(procDir))
+                    {
+                        var p4 = Path.Combine(procDir, "mpv-2.dll");
+                        if (File.Exists(p4) && NativeLibrary.TryLoad(p4, out var h4)) return true;
+                    }
+                }
+            }
+            catch { }
+
+            try
+            {
+                var tempNet = Path.Combine(Path.GetTempPath(), ".net", "VELOCE");
+                if (Directory.Exists(tempNet))
+                {
+                    var mpvFiles = Directory.GetFiles(tempNet, "mpv-2.dll", SearchOption.AllDirectories);
+                    if (mpvFiles.Length > 0 && File.Exists(mpvFiles[0]) && NativeLibrary.TryLoad(mpvFiles[0], out var hExt))
+                    {
+                        return true;
+                    }
+                }
+            }
+            catch { }
 
             return NativeLibrary.TryLoad(DllName, out var handle) ||
                    NativeLibrary.TryLoad("libmpv-2.dll", out handle) ||

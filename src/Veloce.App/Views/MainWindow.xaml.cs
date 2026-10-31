@@ -348,17 +348,17 @@ public partial class MainWindow : Window
 
     private void OnSetMarkerAClicked(object sender, RoutedEventArgs e)
     {
-        var exactPos = _playerService.QueryExactPosition();
-        _viewModel.CurrentTime = exactPos;
-        _viewModel.SetMarkerA(exactPos);
+        var pos = _playerService.IsPlaying ? _playerService.QueryExactPosition() : _viewModel.CurrentTime;
+        _viewModel.CurrentTime = pos;
+        _viewModel.SetMarkerA(pos);
         UpdateTimelineVisuals();
     }
 
     private void OnSetMarkerBClicked(object sender, RoutedEventArgs e)
     {
-        var exactPos = _playerService.QueryExactPosition();
-        _viewModel.CurrentTime = exactPos;
-        _viewModel.SetMarkerB(exactPos);
+        var pos = _playerService.IsPlaying ? _playerService.QueryExactPosition() : _viewModel.CurrentTime;
+        _viewModel.CurrentTime = pos;
+        _viewModel.SetMarkerB(pos);
         UpdateTimelineVisuals();
     }
 
@@ -388,7 +388,7 @@ public partial class MainWindow : Window
         if (deleted)
         {
             var edl = _viewModel.TimelineManager.BuildMpvEdlUri(_viewModel.LoadedVideoPath);
-            _playerService.ApplyEdl(edl);
+            _playerService.ApplyEdl(edl, cutPoint);
             _playerService.Seek(cutPoint, exact: true);
             UpdateTimelineVisuals();
         }
@@ -400,7 +400,7 @@ public partial class MainWindow : Window
         if (undone)
         {
             var edl = _viewModel.TimelineManager.BuildMpvEdlUri(_viewModel.LoadedVideoPath);
-            _playerService.ApplyEdl(edl);
+            _playerService.ApplyEdl(edl, _viewModel.CurrentTime);
             _playerService.Seek(_viewModel.CurrentTime, exact: true);
             UpdateTimelineVisuals();
         }

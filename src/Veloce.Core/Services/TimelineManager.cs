@@ -40,24 +40,12 @@ public class TimelineManager
 
     public void SetMarkerA(TimeSpan virtualTime)
     {
-        var clamped = Clamp(virtualTime, TimeSpan.Zero, RemainingDuration);
-        MarkerA = clamped;
-
-        if (MarkerA > MarkerB)
-        {
-            MarkerB = RemainingDuration;
-        }
+        MarkerA = Clamp(virtualTime, TimeSpan.Zero, RemainingDuration);
     }
 
     public void SetMarkerB(TimeSpan virtualTime)
     {
-        var clamped = Clamp(virtualTime, TimeSpan.Zero, RemainingDuration);
-        MarkerB = clamped;
-
-        if (MarkerB < MarkerA)
-        {
-            MarkerA = TimeSpan.Zero;
-        }
+        MarkerB = Clamp(virtualTime, TimeSpan.Zero, RemainingDuration);
     }
 
     public void ClearSelection()
