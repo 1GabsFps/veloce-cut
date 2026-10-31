@@ -66,13 +66,29 @@ public class EnvironmentDetectorService
             return customSettingsPath;
         }
 
-        // 4. Default system candidates (D:\blur, Program Files, %LOCALAPPDATA%\blur)
-        var systemCandidates = new[]
+        // 4. Default system candidates (Program Files, %LOCALAPPDATA%\blur, fixed drives)
+        var programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+        var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        var systemCandidates = new List<string>
         {
-            @"D:\blur\blur-cli.exe",
-            @"C:\Program Files\blur\blur-cli.exe",
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "blur", "blur-cli.exe")
+            Path.Combine(programFiles, "blur", "blur-cli.exe"),
+            Path.Combine(localAppData, "blur", "blur-cli.exe")
         };
+
+        try
+        {
+            foreach (var drive in DriveInfo.GetDrives())
+            {
+                if (drive.IsReady && drive.DriveType == DriveType.Fixed)
+                {
+                    systemCandidates.Add(Path.Combine(drive.RootDirectory.FullName, "blur", "blur-cli.exe"));
+                }
+            }
+        }
+        catch
+        {
+            // Ignore drive enumeration errors
+        }
 
         foreach (var path in systemCandidates)
         {

@@ -4,7 +4,7 @@ SetCompressor /SOLID lzma
 Name "VELOCE"
 Icon "..\src\Veloce.App\Assets\app.ico"
 UninstallIcon "..\src\Veloce.App\Assets\app.ico"
-OutFile "C:\Users\gbr\.gemini\antigravity\scratch\veloce\bin\Veloce-Setup.exe"
+OutFile "..\bin\Veloce-Setup.exe"
 InstallDir "$LOCALAPPDATA\Programs\Veloce"
 RequestExecutionLevel user
 
@@ -16,7 +16,7 @@ UninstPage instfiles
 
 Section "MainSection" SEC01
     SetOutPath "$INSTDIR"
-    File /r "C:\Users\gbr\.gemini\antigravity\scratch\veloce\bin\VELOCE\*.*"
+    File /r "..\bin\VELOCE\*.*"
     
     CreateDirectory "$SMPROGRAMS\Veloce"
     CreateShortcut "$SMPROGRAMS\Veloce\VELOCE.lnk" "$INSTDIR\VELOCE.exe"

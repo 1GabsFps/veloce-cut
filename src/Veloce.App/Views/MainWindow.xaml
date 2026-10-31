@@ -243,7 +243,6 @@
 
                         <!-- WPF Fallback MediaElement -->
                         <MediaElement x:Name="FallbackMediaElement" LoadedBehavior="Manual" UnloadedBehavior="Manual" Stretch="Uniform" ScrubbingEnabled="True"/>
-                        <Image x:Name="DemoPreviewImage" Stretch="Uniform" Visibility="Collapsed"/>
 
                         <!-- Placeholder overlay when no video loaded -->
                         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center"
