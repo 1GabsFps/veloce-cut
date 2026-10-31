@@ -8,7 +8,7 @@
     <img src="https://img.shields.io/badge/.NET-8.0%20Standalone-512BD4?style=for-the-badge&logo=dotnet" alt=".NET 8 Standalone" />
     <img src="https://img.shields.io/badge/Player-libmpv%20D3D11%20%2F%20NVDEC-3B82F6?style=for-the-badge" alt="libmpv" />
     <img src="https://img.shields.io/badge/Engine-Tekno%20Blur%20%2B%20FFmpeg-10B981?style=for-the-badge" alt="Tekno Blur" />
-    <img src="https://img.shields.io/badge/Tests-28%2F28%20Passing-22C55E?style=for-the-badge" alt="Tests Passing" />
+    <a href="LICENSE"><img src="https://img.shields.io/badge/License-GPL%20v3-00599C?style=for-the-badge&logo=gnu" alt="GPL v3 License" /></a>
   </p>
 </div>
 
@@ -111,21 +111,36 @@ Escolha a opção ideal para o seu fluxo na aba [**Releases Oficiais**](https://
 
 ### Pré-requisitos
 - Windows 10 ou 11 (x64)
-- .NET 8.0 SDK
+- [.NET 8.0 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
 
 ### Comandos
 
 ```powershell
-# 1. Executar a suíte de testes unitários (xUnit)
-dotnet test Veloce.sln -c Release
+# 1. Compilar a solução em Release
+dotnet build Veloce.sln -c Release
 
-# 2. Gerar a build final Standalone x64
-dotnet publish src/Veloce.App/Veloce.App.csproj -c Release -r win-x64 --self-contained true -o bin/VELOCE
+# 2. Gerar a build final Standalone x64 única com libmpv incorporada
+dotnet publish src/Veloce.App/Veloce.App.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o bin
 ```
 
 ---
 
-## 🤝 Créditos & Ecossistema
+## 🤝 Comunidade & Contribuição
+
+Contribuições, correções de bugs e novas ideias são muito bem-vindas!
+* Veja nosso [Guia de Contribuição (CONTRIBUTING.md)](CONTRIBUTING.md) para detalhes de arquitetura e padrões.
+* Consulte o [Código de Conduta (CODE_OF_CONDUCT.md)](CODE_OF_CONDUCT.md) adotado pela comunidade.
+* Para relatar bugs ou sugerir novos atalhos e recursos, abra uma issue utilizando nossos [Templates de Issues](.github/ISSUE_TEMPLATE/).
+
+---
+
+## 📄 Licença
+
+Este projeto é licenciado sob os termos da **GNU General Public License v3.0 (GPL-3.0)**. Consulte o arquivo [LICENSE](LICENSE) para obter o texto completo da licença.
+
+---
+
+## 🎖️ Créditos & Ecossistema
 
 O VELOCE é construído sobre ferramentas e bibliotecas abertas:
 * [libmpv](https://mpv.io/) — Engine de reprodução e manipulação de vídeo via D3D11.

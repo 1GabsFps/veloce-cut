@@ -1,0 +1,69 @@
+name: "🐛 Relato de Bug / Problema"
+description: "Crie um relatório de bug detalhado para ajudar a identificar e corrigir o problema no VELOCE."
+title: "[BUG]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Obrigado por dedicar seu tempo para reportar um bug no **VELOCE**!
+        Antes de abrir, certifique-se de que está utilizando a versão mais recente disponível na aba de Releases.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: "Descrição do Problema"
+      description: "Uma explicação clara e objetiva do que aconteceu."
+      placeholder: "Ex: Ao abrir um vídeo em formato .mkv gravado a 240fps e tentar aplicar o blur, a janela fecha..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: "Passos para Reproduzir"
+      description: "Descreva o passo a passo para que possamos reproduzir o bug."
+      placeholder: |
+        1. Abrir o VELOCE
+        2. Arrastar o vídeo 'gameplay.mp4'
+        3. Pressionar 'A' aos 00:05 e 'B' aos 00:10
+        4. Clicar em 'CORTAR & APLICAR BLUR'
+    validations:
+      required: true
+
+  - type: dropdown
+    id: version
+    attributes:
+      label: "Versão do VELOCE"
+      description: "Qual versão você está utilizando?"
+      options:
+        - "v1.0.0 Standalone Portable (.exe)"
+        - "v1.0.0 Instalador (.Setup.exe)"
+        - "Compilado direto do código-fonte (git main)"
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: "Sistema Operacional"
+      description: "Versão exata do Windows."
+      placeholder: "Ex: Windows 11 Pro 23H2 (build 22631)"
+    validations:
+      required: true
+
+  - type: input
+    id: gpu
+    attributes:
+      label: "Placa de Vídeo (GPU)"
+      description: "Sua GPU principal (para sabermos o encoder NVENC/AMF/QSV)."
+      placeholder: "Ex: NVIDIA RTX 4070 (Driver 560.xx) / AMD Radeon RX 7800 XT"
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: "Logs ou Mensagem de Erro"
+      description: "Se houver mensagens de erro na barra de status ou no terminal, cole aqui."
+      render: shell
